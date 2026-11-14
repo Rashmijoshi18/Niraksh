@@ -20,6 +20,7 @@ cd backend
 cp .env.example .env
 pnpm install
 pnpm dev
+# Verify health in another terminal: curl -s http://localhost:4000/health
 
 # Frontend, in a separate terminal
 cd frontend

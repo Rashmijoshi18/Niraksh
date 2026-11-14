@@ -209,6 +209,16 @@ If you want to run the project locally, use the setup guides in the service-spec
 
 Typical local ports are `4000` for the backend API and `3000` for the frontend app.
 
+### Verifying the Backend
+
+Confirm the backend API and database/Redis dependencies are running with a single command:
+
+```bash
+curl -s http://localhost:4000/health
+```
+
+For expected JSON payloads, liveness vs. dependency readiness, and troubleshooting guides for database, Redis, port conflicts, or environment variables, see [Backend Health Check & Troubleshooting](./backend/README.md#-health-checks--verification).
+
 ## 🩺 Current Care Journey
 
 The implemented patient-to-doctor flow is:
