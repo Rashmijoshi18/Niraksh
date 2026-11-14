@@ -113,6 +113,16 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### Step 6: Environment Variables (Optional)
+
+Create a `.env` file based on `.env.example` if you need to override the default Ollama URL or local model:
+
+```bash
+cp .env.example .env
+```
+
+For full variable definitions, see the [Environment Variables Reference](../ENV.md).
+
 ---
 
 ## ▶️ Running the Service

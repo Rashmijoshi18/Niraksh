@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Optional
 
 import requests
@@ -8,8 +9,8 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-OLLAMA_API_URL = "http://localhost:11434/api/generate"
-LOCAL_MODEL = "medgemma1.5"
+OLLAMA_API_URL = os.getenv("OLLAMA_API_URL", "http://localhost:11434/api/generate")
+LOCAL_MODEL = os.getenv("LOCAL_MODEL", "medgemma1.5")
 REQUEST_TIMEOUT_SECONDS = 300
 TEMPERATURE = 0.7
 TOP_P = 0.9

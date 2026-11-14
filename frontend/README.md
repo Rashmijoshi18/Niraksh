@@ -49,7 +49,7 @@ To eliminate the friction and anxiety commonly associated with digital healthcar
    ```
 
 2. Environment Variables:
-   Create a `.env.local` file based on the provided examples:
+   Create a `.env.local` file based on the provided `.env.example`. For a complete reference of public vs. server-only scopes and safe mock setups, see the [Environment Variables Reference](../ENV.md).
 
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:4000/api

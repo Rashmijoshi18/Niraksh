@@ -12,7 +12,7 @@ Thank you for helping improve Niraksh-Guardian. Contributions are welcome across
 
 ## Local development
 
-The project is split into frontend, backend, and optional AI services. Use the relevant service README for prerequisites and environment variables.
+The project is split into frontend, backend, and optional AI services. Consult the [Environment Variables Reference](./ENV.md) for required variables, public vs server-only scopes, and safe local defaults. Use the relevant service README for prerequisites and detailed setup.
 
 ```bash
 # Backend
