@@ -231,3 +231,16 @@ def generate_stream(req: PromptRequest):
             upstream.close()
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@app.on_event("startup")
+def startup_event():
+    """Document the complete local startup workflow."""
+    print("Starting up the AI service...")
+    print("1. Initializing FastAPI application.")
+    print("2. Setting up OLLAMA API URL: ", OLLAMA_API_URL)
+    print("3. Configuring local model: ", LOCAL_MODEL)
+    print("4. Setting request timeout: ", REQUEST_TIMEOUT_SECONDS, "seconds")
+    print("5. Setting temperature: ", TEMPERATURE)
+    print("6. Setting top_p: ", TOP_P)
+    print("AI service startup complete.")
