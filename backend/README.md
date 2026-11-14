@@ -58,7 +58,7 @@ To solve the challenge of accurately and securely interpreting fragmented person
     ```
 
 2. Environment Variables:
-   Create a `.env` file based on `.env.example` and fill in your credentials:
+   Create a `.env` file based on `.env.example` and fill in your credentials. For a full breakdown of all backend variables and required vs. optional status, see the [Environment Variables Reference](../ENV.md).
 
     ```env
     PORT=4000
