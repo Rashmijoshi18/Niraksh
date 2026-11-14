@@ -20,6 +20,7 @@ import { apiClient, swrFetcher } from "@/lib/api";
 import { API_ROUTES } from "@/lib/api-routes";
 import { useToast } from "@/contexts/ToastProvider";
 import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn, formatDate } from "@/lib/utils";
 import type { HealthReport } from "@/types/report";
@@ -191,13 +192,17 @@ export function ReportsClient() {
 					<Spinner size="lg" className="text-primary" />
 				</div>
 			) : !reports || reports.length === 0 ? (
-				<div className="rounded-xl border border-border bg-surface p-8 text-center shadow-card">
-					<FileText className="mx-auto mb-3 size-10 text-muted" />
-					<p className="font-heading text-base font-bold text-foreground">No reports yet</p>
-					<p className="mt-1 text-sm text-muted">
-						Click &quot;Generate Report&quot; to create your first AI-powered health summary.
-					</p>
-				</div>
+				<EmptyState
+					icon={FileText}
+					title="No reports yet"
+					description='Click "Generate Report" to create your first AI-powered health summary.'
+					action={{
+						label: "Generate Report",
+						onClick: handleGenerate,
+					}}
+					variant="card"
+					size="lg"
+				/>
 			) : (
 				<div className="space-y-3">
 					<p className="text-xs font-medium text-muted">

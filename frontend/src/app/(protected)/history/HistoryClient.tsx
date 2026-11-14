@@ -23,6 +23,7 @@ import { apiClient, swrFetcher } from "@/lib/api";
 import { API_ROUTES } from "@/lib/api-routes";
 import { useToast } from "@/contexts/ToastProvider";
 import { Button } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn, formatDate } from "@/lib/utils";
@@ -74,6 +75,13 @@ const TABS: {
 		endpoint: API_ROUTES.HISTORY_SYMPTOM,
 	},
 ];
+
+const TAB_ACTION_CONFIG: Record<HistoryType, { label: string; href: string }> = {
+	medicine: { label: "Check a medicine", href: "/medicine" },
+	prescription: { label: "Upload prescription", href: "/prescription" },
+	interaction: { label: "Check drug interactions", href: "/drug-interaction" },
+	symptom: { label: "Start symptom analysis", href: "/symptom-analysis" },
+};
 
 /* ------------------------------------------------------------------ */
 /*  Expandable history entry                                           */
@@ -564,15 +572,18 @@ export function HistoryClient() {
 					<Spinner size="lg" className="text-primary" />
 				</div>
 			) : entries.length === 0 ? (
-				<div className="rounded-xl border border-border bg-surface p-8 text-center shadow-card">
-					<activeConfig.icon className={cn("mx-auto mb-3 size-10", activeConfig.color)} />
-					<p className="font-heading text-base font-bold text-foreground">
-						No {activeConfig.label} history yet
-					</p>
-					<p className="mt-1 text-sm text-muted">
-						Start using the {activeConfig.label.toLowerCase()} tool to see your history here.
-					</p>
-				</div>
+				<EmptyState
+					icon={activeConfig.icon}
+					iconClassName={activeConfig.color}
+					title={`No ${activeConfig.label.toLowerCase()} history yet`}
+					description={`Start using the ${activeConfig.label.toLowerCase()} tool to see your history here.`}
+					action={{
+						label: TAB_ACTION_CONFIG[activeTab].label,
+						href: TAB_ACTION_CONFIG[activeTab].href,
+					}}
+					variant="card"
+					size="lg"
+				/>
 			) : (
 				<div className="space-y-3">
 					<p className="text-xs font-medium text-muted">
