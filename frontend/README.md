@@ -145,3 +145,18 @@ import { Activity } from "lucide-react";
 />
 ```
 
+## ♿ Accessibility & Keyboard Navigation
+
+The chat composer (`ChatInput.tsx`) conforms to WCAG 2.1 AA (TRD section 4.7) and mobile usability guidelines (FRD section 17.2):
+
+- **Touch Targets:** All interactive controls (`Attach image`, `Voice input`, `Send message`, `Remove attachment`) maintain touch targets ≥ 44x44px (`min-h-[44px] min-w-[44px]`).
+- **Visible Focus States:** High-contrast `focus-visible:ring-2 focus-visible:ring-primary` indicators on all controls with clear offset spacing.
+- **Dynamic Accessible Names:** State-aware `aria-label` attributes across idle, disabled/generating, recording, and attachment states.
+- **Screen Reader Announcements:** Dedicated `aria-live="polite"` status regions for voice transcription, file upload validation errors, and attachment events.
+- **Visual Status Indicators:** Active voice recording displays a pulsing badge with explicit text ("Listening... Speak into your microphone") and a direct "Stop" action, avoiding color-only state representation.
+- **Keyboard Shortcuts:**
+  - `Enter`: Send message
+  - `Shift + Enter`: Insert new line in textarea
+  - `Escape`: Cancel active voice recording or dismiss file upload error
+  - `Tab` / `Shift + Tab`: Logical, predictable tab order across all composer controls
+
