@@ -89,6 +89,244 @@ To solve the challenge of accurately and securely interpreting fragmented person
     ```
     The API will be available at `http://localhost:4000` (or your defined PORT).
 
+5. Verify the Server:
+    ```bash
+    curl -s http://localhost:4000/health
+    ```
+
+## 🩺 Health Checks & Verification
+
+After starting the backend, verify its operational status using the health check endpoints.
+
+### One-Command Quick Verification
+
+```bash
+curl -i http://localhost:4000/health
+```
+
+Or using PowerShell on Windows:
+
+```powershell
+Invoke-RestMethod -Uri http://localhost:4000/health
+```
+
+### Endpoints Overview
+
+| Endpoint | Purpose | Probe Type | Expected Status |
+|---|---|---|---|
+| `GET /` | Root welcome message | Liveness (process is running) | `200 OK` |
+| `GET /api` | API route directory | Liveness (Express router is mounted) | `200 OK` |
+| `GET /health` | Database & Redis status + auth metrics | Dependency readiness | `200 OK` (healthy) / `503 Service Unavailable` (degraded) |
+
+### Liveness vs. Dependency Readiness
+
+- **Liveness (`GET /` or `GET /api`)**: Probes whether the Node.js/Express server process is running and accepting HTTP requests, independent of external dependencies. Use this for basic process-uptime checks and reverse proxy pinging.
+- **Dependency Readiness (`GET /health`)**: Actively tests live connections to external dependencies:
+  - **PostgreSQL** via Prisma (`SELECT 1`)
+  - **Redis** via `PING`
+  - Returns **`200 OK`** (`status: "ok"`) when all dependencies are healthy.
+  - Returns **`503 Service Unavailable`** (`status: "degraded"`) if PostgreSQL or Redis is unreachable. Note: The backend is architected to continue running in degraded mode even when Redis is down, but response caching and token blacklisting will be inactive.
+
+### Expected Responses
+
+#### 1. All Services Healthy (`GET /health` → `200 OK`)
+
+```bash
+curl -s http://localhost:4000/health
+```
+
+```json
+{
+  "status": "ok",
+  "uptime": 128,
+  "timestamp": "2026-11-14T15:30:00.000Z",
+  "checks": {
+    "database": {
+      "status": "healthy",
+      "latency": 3
+    },
+    "redis": {
+      "status": "healthy",
+      "latency": 1
+    }
+  },
+  "auth": {
+    "activeSessions": 0,
+    "failedAttempts": 0,
+    "lockouts": 0
+  }
+}
+```
+
+#### 2. Degraded State — Redis Unavailable (`GET /health` → `503 Service Unavailable`)
+
+When Redis is not running or unreachable, the server logs a warning and continues running in degraded mode:
+
+```json
+{
+  "status": "degraded",
+  "uptime": 45,
+  "timestamp": "2026-11-14T15:30:00.000Z",
+  "checks": {
+    "database": {
+      "status": "healthy",
+      "latency": 2
+    },
+    "redis": {
+      "status": "unhealthy",
+      "error": "Connection is closed",
+      "latency": 1
+    }
+  },
+  "auth": {
+    "activeSessions": 0,
+    "failedAttempts": 0,
+    "lockouts": 0
+  }
+}
+```
+
+#### 3. Degraded State — Database Connection Failure (`GET /health` → `503 Service Unavailable`)
+
+When PostgreSQL is unreachable or connection is refused:
+
+```json
+{
+  "status": "degraded",
+  "uptime": 12,
+  "timestamp": "2026-11-14T15:30:00.000Z",
+  "checks": {
+    "database": {
+      "status": "unhealthy",
+      "error": "Can't reach database server at localhost:5432",
+      "latency": 1005
+    },
+    "redis": {
+      "status": "healthy",
+      "latency": 1
+    }
+  },
+  "auth": {
+    "activeSessions": 0,
+    "failedAttempts": 0,
+    "lockouts": 0
+  }
+}
+```
+
+#### 4. Root & API Directory Endpoints
+
+```bash
+# Root welcome endpoint
+curl -s http://localhost:4000/
+# Response:
+# {"message":"Welcome to Niraksh Guardian API"}
+
+# API directory endpoint
+curl -s http://localhost:4000/api
+# Response:
+# {"/":"/","api":"/api","auth":"/api/auth","chats":"/api/chats",...}
+```
+
+---
+
+## 🔧 Troubleshooting Local Setup
+
+### 1. Database Connection Failures
+
+**Symptoms:**
+- Server crashes on startup with `PrismaClientInitializationError: Can't reach database server at localhost:5432` or error code `P1001`.
+- `/health` returns `checks.database.status: "unhealthy"` with HTTP 503.
+
+**Actionable Steps:**
+1. Check that PostgreSQL is installed and actively running:
+   - **Docker:** `docker ps` (start container: `docker run --name niraksh-postgres -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres`)
+   - **Linux/macOS:** `sudo systemctl status postgresql` or `brew services list`
+   - **Windows:** Check `Services` app or run `Get-Service -Name postgresql*` in PowerShell.
+2. Verify connection string in `backend/.env`:
+   ```env
+   DATABASE_URL=postgresql://user:password@localhost:5432/niraksh_guardian?schema=public
+   ```
+   *Note:* If using Prisma Accelerate, configure `DIRECT_DATABASE_URL` with your direct connection string.
+3. Test connectivity with the built-in database verification script:
+   ```bash
+   pnpm tsx verify-db.ts
+   ```
+4. Run Prisma migrations and seed the database:
+   ```bash
+   pnpm prisma generate
+   pnpm prisma:migrate
+   pnpm seed
+   ```
+
+### 2. Redis Connection Failures
+
+**Symptoms:**
+- Console log warning: `Redis unavailable. Continuing in degraded mode without cache`.
+- `/health` returns `checks.redis.status: "unhealthy"` and `status: "degraded"`.
+
+**Actionable Steps:**
+1. Verify Redis is running on port 6379:
+   - **Docker:** `docker run --name niraksh-redis -p 6379:6379 -d redis:alpine`
+   - **Linux/macOS:** `sudo systemctl status redis` or `brew services list`
+   - **CLI Ping:** Run `redis-cli ping` (expected output: `PONG`).
+2. Verify `REDIS_URL` in `backend/.env`:
+   ```env
+   REDIS_URL=redis://localhost:6379
+   ```
+3. *Note:* The backend automatically retries connecting to Redis every 30 seconds. Development on endpoints that do not strictly require caching can still proceed while Redis is disconnected.
+
+### 3. Missing Environment Variables (`ZodError`)
+
+**Symptoms:**
+- Startup aborts immediately with:
+  ```text
+  ZodError: [
+    { "code": "invalid_type", "expected": "string", "received": "undefined", "path": ["DATABASE_URL"], "message": "Required" }
+  ]
+  ```
+
+**Actionable Steps:**
+1. Ensure `.env` exists in the `backend/` directory:
+   ```bash
+   cd backend
+   cp .env.example .env
+   ```
+2. Required variables that must be non-empty strings:
+   - `DATABASE_URL`
+   - `JWT_SECRET` (e.g. `dev_jwt_secret_min32chars_for_local_testing`)
+   - `JWT_REFRESH_SECRET` (e.g. `dev_jwt_refresh_secret_min32chars_for_local_testing`)
+3. Optional variables (Google OAuth, Gemini API, Cloudinary, AWS SES) are only required when testing their respective features (AI analysis, image upload, email delivery).
+
+### 4. Port Conflicts (`EADDRINUSE: :::4000`)
+
+**Symptoms:**
+- Error on startup: `Error: listen EADDRINUSE: address already in use :::4000`.
+
+**Actionable Steps:**
+1. Find and terminate the process using port 4000:
+   - **Windows (PowerShell):**
+     ```powershell
+     netstat -ano | findstr :4000
+     Stop-Process -Id <PID> -Force
+     ```
+   - **Linux / macOS:**
+     ```bash
+     lsof -i :4000
+     kill -9 <PID>
+     # Or one-liner:
+     npx kill-port 4000
+     ```
+2. Alternatively, specify a different port in `backend/.env`:
+   ```env
+   PORT=4001
+   ```
+   Remember to update `NEXT_PUBLIC_API_URL` in `frontend/.env.local`:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:4001/api
+   ```
+
+
 ## 📚 Architecture Overview
 
 Dive deeper into our backend architecture, database schemas, and AI engineering patterns:
