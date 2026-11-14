@@ -30,6 +30,7 @@ import {
 import { useAuth } from "@/contexts/AuthProvider";
 import { cn, formatDate } from "@/lib/utils";
 import { Spinner } from "@/components/ui/Spinner";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import type { DashboardTrendSeries } from "@/types/health";
 
@@ -209,13 +210,17 @@ function LabTrendsChart({ series }: { series: DashboardTrendSeries[] }) {
 
 	if (series.length === 0) {
 		return (
-			<div className="rounded-xl border border-dashed border-border bg-surface/40 p-8 text-center">
-				<LineChart className="mx-auto mb-3 size-7 text-muted" />
-				<p className="text-sm font-semibold text-foreground">No trend data yet</p>
-				<p className="mt-1 text-xs text-muted">
-					Upload at least two lab reports to visualize how values change over time.
-				</p>
-			</div>
+			<EmptyState
+				icon={LineChart}
+				title="No trend data yet"
+				description="Upload at least two lab reports to visualize how values change over time."
+				action={{
+					label: "Upload lab report",
+					href: "/prescription",
+				}}
+				variant="dashed"
+				size="md"
+			/>
 		);
 	}
 
@@ -373,12 +378,16 @@ function AbnormalityTimeline({
 }) {
 	if (timeline.length === 0) {
 		return (
-			<div className="rounded-xl border border-dashed border-border bg-surface/40 p-6 text-center">
-				<p className="text-sm font-semibold text-foreground">No report timeline yet</p>
-				<p className="mt-1 text-xs text-muted">
-					Upload lab reports to track high, low, and normal shifts.
-				</p>
-			</div>
+			<EmptyState
+				title="No report timeline yet"
+				description="Upload lab reports to track high, low, and normal shifts."
+				action={{
+					label: "Upload lab report",
+					href: "/prescription",
+				}}
+				variant="dashed"
+				size="sm"
+			/>
 		);
 	}
 
@@ -628,12 +637,17 @@ export function DashboardClient() {
 					</div>
 
 					{(medicines?.recent.length ?? 0) === 0 ? (
-						<div className="rounded-xl border border-dashed border-border bg-surface/40 p-6 text-center">
-							<p className="text-sm font-semibold text-foreground">No medicines found yet</p>
-							<p className="mt-1 text-xs text-muted">
-								Scan a prescription to extract and track medicines here.
-							</p>
-						</div>
+						<EmptyState
+							icon={Pill}
+							title="No medicines found yet"
+							description="Scan a prescription to extract and track medicines here."
+							action={{
+								label: "Scan prescription",
+								href: "/prescription",
+							}}
+							variant="dashed"
+							size="sm"
+						/>
 					) : (
 						<div className="space-y-4">
 							<div>
@@ -701,12 +715,17 @@ export function DashboardClient() {
 					</div>
 
 					{(labTrends?.insights.length ?? 0) === 0 ? (
-						<div className="rounded-xl border border-dashed border-border bg-surface/40 p-6 text-center">
-							<p className="text-sm font-semibold text-foreground">No insight cards yet</p>
-							<p className="mt-1 text-xs text-muted">
-								Add more lab reports to generate meaningful change summaries.
-							</p>
-						</div>
+						<EmptyState
+							icon={Sparkles}
+							title="No insight cards yet"
+							description="Add more lab reports to generate meaningful change summaries."
+							action={{
+								label: "Upload lab report",
+								href: "/prescription",
+							}}
+							variant="dashed"
+							size="sm"
+						/>
 					) : (
 						<div className="space-y-3">
 							{(labTrends?.insights ?? []).map((insight) => (
@@ -822,13 +841,17 @@ export function DashboardClient() {
 				</div>
 
 				{recentActivity.length === 0 ? (
-					<div className="rounded-xl border border-dashed border-border bg-surface/50 p-8 text-center">
-						<Activity className="mx-auto mb-3 size-8 text-muted" />
-						<h3 className="font-heading text-sm font-bold text-foreground">No activity yet</h3>
-						<p className="mt-1 text-xs text-muted">
-							Start using health tools to see your activity feed here.
-						</p>
-					</div>
+					<EmptyState
+						icon={Activity}
+						title="No activity yet"
+						description="Start using health tools to see your activity feed here."
+						action={{
+							label: "Start symptom analysis",
+							href: "/symptom-analysis",
+						}}
+						variant="dashed"
+						size="md"
+					/>
 				) : (
 					<div className="space-y-2">
 						{recentActivity.map((item) => (

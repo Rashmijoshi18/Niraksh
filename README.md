@@ -206,8 +206,19 @@ If you want to run the project locally, use the setup guides in the service-spec
 
 - [Backend setup](./backend/README.md)
 - [Frontend setup](./frontend/README.md)
+- [Environment variables reference](./ENV.md)
 
 Typical local ports are `4000` for the backend API and `3000` for the frontend app.
+
+### Verifying the Backend
+
+Confirm the backend API and database/Redis dependencies are running with a single command:
+
+```bash
+curl -s http://localhost:4000/health
+```
+
+For expected JSON payloads, liveness vs. dependency readiness, and troubleshooting guides for database, Redis, port conflicts, or environment variables, see [Backend Health Check & Troubleshooting](./backend/README.md#-health-checks--verification).
 
 ## 🩺 Current Care Journey
 
@@ -239,6 +250,7 @@ Important safeguards:
 
 - [Functional requirements](./FRD.md) — user-facing behavior and acceptance criteria
 - [Technical requirements](./TRD.md) — architecture, APIs, security, and deployment
+- [Environment variables reference](./ENV.md) — complete reference, public vs server-only rules, and safe local setup
 - [Backend README](./backend/README.md) — API setup and backend workflows
 - [Backend system design](./backend/docs/SYSTEM_DESIGN.md)
 - [Database schema](./backend/docs/DATABASE_SCHEMA.md)

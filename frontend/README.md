@@ -49,7 +49,7 @@ To eliminate the friction and anxiety commonly associated with digital healthcar
    ```
 
 2. Environment Variables:
-   Create a `.env.local` file based on the provided examples:
+   Create a `.env.local` file based on the provided `.env.example`. For a complete reference of public vs. server-only scopes and safe mock setups, see the [Environment Variables Reference](../ENV.md).
 
    ```env
    NEXT_PUBLIC_API_URL=http://localhost:4000/api
@@ -91,6 +91,59 @@ In addition to the public and patient health-tool routes, the App Router include
 - `/admin/doctor-applications` — admin review of doctor applications
 
 Booking context is carried between symptom analysis and appointment preparation in browser session storage under `ng:appointment-context`; it is a convenience prefill only and is not treated as consent.
+
+## 🧩 Reusable UI Components
+
+### EmptyState (`@/components/ui/EmptyState`)
+
+The `EmptyState` component provides a typed, responsive, and accessible placeholder for empty lists and data collections across the dashboard, history, and workspace views (FRD section 16 & TRD sections 4.1, 4.7).
+
+#### Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `title` | `string` | *required* | Accessible heading for the empty state |
+| `description` | `ReactNode` | `undefined` | Contextual explanation and guidance on what the user can do next |
+| `icon` | `ComponentType \| ReactNode` | `undefined` | Icon displayed above the title (`aria-hidden="true"`) |
+| `iconClassName` | `string` | `undefined` | Custom styling / color for the icon |
+| `action` | `EmptyStateAction` | `undefined` | Optional CTA with `label`, `href` (Link) or `onClick` (Button), and variant |
+| `variant` | `"dashed" \| "card" \| "subtle"` | `"dashed"` | Visual container style (`dashed` for dashboard widgets, `card` for page lists) |
+| `size` | `"sm" \| "md" \| "lg"` | `"md"` | Responsive padding and typography scale |
+| `headingLevel`| `"h2" \| "h3" \| "h4" \| "p"` | `"h3"` | Accessible heading tag hierarchy |
+| `children` | `ReactNode` | `undefined` | Optional supplementary action buttons or controls |
+
+#### Example Usage
+
+```tsx
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Activity } from "lucide-react";
+
+// Dashboard widget with navigation CTA
+<EmptyState
+  icon={Activity}
+  title="No activity yet"
+  description="Start using health tools to see your activity feed here."
+  action={{
+    label: "Start symptom analysis",
+    href: "/symptom-analysis",
+  }}
+  variant="dashed"
+  size="md"
+/>
+
+// Card-style empty state with button action
+<EmptyState
+  icon={FileText}
+  title="No reports yet"
+  description="Generate your first AI-powered health summary using your health profile and history."
+  action={{
+    label: "Generate Report",
+    onClick: handleGenerate,
+  }}
+  variant="card"
+  size="lg"
+/>
+```
 
 ## ♿ Accessibility & Keyboard Navigation
 
