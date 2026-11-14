@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, AlertTriangle, FileText, HeartPulse, Pill, ShieldCheck, Sparkles, Stethoscope } from "lucide-react";
+import { ArrowLeft, AlertTriangle, ExternalLink, FileText, HeartPulse, Pill, ShieldCheck, Sparkles, Stethoscope } from "lucide-react";
 import { issueDoctorPrescription, runPrePrescriptionCheck, updateClinicalSummary, usePatientRecord } from "@/hooks/useDoctorPortal";
 import { Spinner } from "@/components/ui/Spinner";
 import { useToast } from "@/contexts/ToastProvider";
@@ -334,9 +334,23 @@ export function PatientRecordClient({ patientId }: { patientId: string }) {
 						<div className="space-y-3">
 							{data.labReports.map((report) => (
 								<div key={report.id} className="rounded-xl border border-border p-4">
-									<div className="flex flex-col justify-between gap-1 sm:flex-row">
-										<p className="font-semibold text-foreground">{report.fileName}</p>
-										<span className="text-xs text-muted">{formatDate(report.createdAt)}</span>
+									<div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+										<div className="min-w-0">
+											<p className="font-semibold text-foreground">{report.fileName}</p>
+											<span className="mt-1 block text-xs text-muted">{formatDate(report.createdAt)}</span>
+										</div>
+										{report.fileUrl ? (
+											<a
+												href={report.fileUrl}
+												target="_blank"
+												rel="noreferrer"
+												className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-primary px-4 text-xs font-semibold text-primary transition hover:bg-primary/10"
+											>
+												<ExternalLink className="size-3.5" /> Open original
+											</a>
+										) : (
+											<span className="text-xs text-muted">Original file unavailable</span>
+										)}
 									</div>
 									<p className="mt-1 text-xs font-semibold uppercase tracking-wide text-primary">
 										Risk: {report.overallRisk}

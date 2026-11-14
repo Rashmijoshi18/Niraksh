@@ -30,7 +30,7 @@ const toPublicDoctor = (doctor: DoctorWithBooking) => {
 	const { doctorProfile, ...publicDoctor } = doctor;
 	return {
 		...publicDoctor,
-		isBookable: doctorProfile?.verificationStatus === "APPROVED",
+		isBookable: doctor.isAvailable && doctorProfile?.verificationStatus === "APPROVED",
 		doctorProfileId: doctorProfile?.id ?? null,
 	};
 };

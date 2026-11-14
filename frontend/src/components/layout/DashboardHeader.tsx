@@ -19,6 +19,8 @@ const ROUTE_LABELS: Record<string, string> = {
 	"/profile": "Profile",
 	"/history": "Health History",
 	"/reports": "Reports",
+	"/appointments": "Appointments",
+	"/clinical-intake": "Prepare for Visit",
 };
 
 /* ------------------------------------------------------------------ */

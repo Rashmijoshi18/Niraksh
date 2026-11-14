@@ -8,6 +8,7 @@ import { DoctorFilters } from "@/components/doctor/DoctorFilters";
 import { DoctorCard } from "@/components/doctor/DoctorCard";
 import { Pagination } from "@/components/doctor/Pagination";
 import { Spinner } from "@/components/ui/Spinner";
+import { CareJourney } from "@/components/care/CareJourney";
 import { Stethoscope, SearchX } from "lucide-react";
 import type {
 	DoctorSearchParams,
@@ -147,6 +148,22 @@ export function DoctorSuggestClient() {
 		setParams((prev) => ({ ...prev, page }));
 	}, []);
 
+	const persistBookingContext = useCallback(
+		(specialization: string) => {
+			if (typeof window === "undefined") return;
+			sessionStorage.setItem(
+				"ng:appointment-context",
+				JSON.stringify({
+					symptoms: effectiveSymptoms ?? "",
+					condition: urlCondition ?? "",
+					specialization,
+					possibleConditions: lastAnalysis?.possibleConditions ?? [],
+				}),
+			);
+		},
+		[effectiveSymptoms, lastAnalysis?.possibleConditions, urlCondition],
+	);
+
 	const [searchResetKey, setSearchResetKey] = useState(0);
 
 	const handleResetFilters = useCallback(() => {
@@ -180,6 +197,13 @@ export function DoctorSuggestClient() {
 				onSpecialistFound={handleSpecialistFound}
 				onAnalysisComplete={handleAnalysisComplete}
 			/>
+
+			<CareJourney active="doctor" />
+
+			<div className="rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground">
+				<span className="font-semibold">Next:</span> choose a verified doctor below. Your symptom context will
+				follow into booking, so you do not have to type it again.
+			</div>
 
 			{/* Filters */}
 			<div id="doctor-results">
@@ -233,7 +257,12 @@ export function DoctorSuggestClient() {
 					{/* Doctor cards grid */}
 					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 						{doctors.map((doctor, index) => (
-							<DoctorCard key={doctor.id} doctor={doctor} rank={index} />
+							<DoctorCard
+								key={doctor.id}
+								doctor={doctor}
+								rank={index}
+								onBook={() => persistBookingContext(doctor.specialization)}
+							/>
 						))}
 					</div>
 

@@ -30,6 +30,16 @@ export interface Appointment {
 	doctorNote?: string | null;
 	doctor?: AppointmentDoctor;
 	patient?: { id: string; name: string | null; email: string; gender: string | null };
+	clinicalIntake?: Pick<
+		ClinicalIntake,
+		| "id"
+		| "status"
+		| "triageLevel"
+		| "consentGrantedAt"
+		| "consentRevokedAt"
+		| "expiresAt"
+		| "submittedAt"
+	> | null;
 }
 
 export interface DoctorSlotResponse {
@@ -103,6 +113,7 @@ export interface PatientRecordResponse {
 	labReports: Array<{
 		id: string;
 		fileName: string;
+		fileUrl: string;
 		overallRisk: string;
 		createdAt: string;
 		components: Array<{

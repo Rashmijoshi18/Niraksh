@@ -185,7 +185,47 @@ export const getMyAppointments = async (req: Request, res: Response) => {
 			include: { doctor: true, prescription: { include: { medications: true } } },
 			orderBy: { scheduledAt: "asc" },
 		});
-		return res.json({ appointments });
+
+		// Keep the core appointment list available during a rolling deploy where the
+		// clinical-intake migration has not reached the database yet.
+		let intakes: Array<{
+			appointmentId: string | null;
+			id: string;
+			status: string;
+			triageLevel: string;
+			consentGrantedAt: Date | null;
+			consentRevokedAt: Date | null;
+			expiresAt: Date;
+			submittedAt: Date | null;
+		}> = [];
+		try {
+			intakes = await prisma.clinicalIntakeSession.findMany({
+				where: { appointmentId: { in: appointments.map((appointment) => appointment.id) } },
+				select: {
+					appointmentId: true,
+					id: true,
+					status: true,
+					triageLevel: true,
+					consentGrantedAt: true,
+					consentRevokedAt: true,
+					expiresAt: true,
+					submittedAt: true,
+				},
+			});
+		} catch (error) {
+			if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2021")) throw error;
+			logger.warn("Clinical intake migration is not applied; returning appointments without intake status");
+		}
+
+		const intakeByAppointmentId = new Map(
+			intakes.filter((intake) => intake.appointmentId).map((intake) => [intake.appointmentId!, intake])
+		);
+		return res.json({
+			appointments: appointments.map((appointment) => ({
+				...appointment,
+				clinicalIntake: intakeByAppointmentId.get(appointment.id) ?? null,
+			})),
+		});
 	} catch (error) {
 		handleControllerError({ error, res, logger, context: "Failed to get patient appointments" });
 	}

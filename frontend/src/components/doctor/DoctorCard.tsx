@@ -46,9 +46,11 @@ interface DoctorCardProps {
 	doctor: Doctor;
 	/** 0-based position in the relevance-sorted list — used to show "Best Match" ribbon */
 	rank?: number;
+	/** Persists the patient symptom context just before entering booking. */
+	onBook?: () => void;
 }
 
-export function DoctorCard({ doctor, rank }: DoctorCardProps) {
+export function DoctorCard({ doctor, rank, onBook }: DoctorCardProps) {
 	const isTopMatch = rank === 0 && doctor._relevanceScore !== undefined;
 	const [expanded, setExpanded] = useState(false);
 
@@ -205,6 +207,7 @@ export function DoctorCard({ doctor, rank }: DoctorCardProps) {
 			{doctor.isBookable ? (
 				<Link
 					href={`/appointments/book?doctorId=${doctor.id}`}
+					onClick={onBook}
 					className="flex w-full items-center justify-center gap-2 border-t border-border bg-primary/5 py-2.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/10"
 				>
 					<CalendarDays className="size-3.5" /> Book appointment

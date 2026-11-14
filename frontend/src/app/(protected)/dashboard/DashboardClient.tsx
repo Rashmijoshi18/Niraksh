@@ -13,6 +13,7 @@ import {
 	Activity,
 	TrendingUp,
 	Clock,
+	CalendarDays,
 	ArrowRight,
 	Shield,
 	FileBarChart,
@@ -25,7 +26,6 @@ import {
 	ArrowDownRight,
 	Minus,
 	Sparkles,
-	ClipboardList,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthProvider";
 import { cn, formatDate } from "@/lib/utils";
@@ -39,10 +39,10 @@ import type { DashboardTrendSeries } from "@/types/health";
 
 const quickActions = [
 	{
-		title: "Prepare for Visit",
-		description: "Share your clinical history",
-		icon: ClipboardList,
-		href: "/clinical-intake",
+		title: "Find a Doctor",
+		description: "Match symptoms and book a visit",
+		icon: CalendarDays,
+		href: "/symptom-analysis",
 		gradient: "from-teal-500/20 to-teal-600/5",
 		iconColor: "text-teal-600",
 	},
