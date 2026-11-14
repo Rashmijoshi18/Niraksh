@@ -248,6 +248,19 @@ Important safeguards:
 - [Frontend system design](./frontend/doc/SYSTEM_DESIGN.md)
 - [AI service README](./ai-services/README.md) — local FastAPI/Ollama fallback
 
+## 🌱 Contributing
+
+Niraksh-Guardian is open source and welcomes contributions across the frontend, backend, AI services, documentation, testing, accessibility, and security.
+
+- Read [CONTRIBUTING.md](./CONTRIBUTING.md) for setup and pull request guidance.
+- Use the GitHub issue templates for bug reports and feature requests.
+- Read [SECURITY.md](./SECURITY.md) before reporting a security concern.
+- Never submit real patient data, medical records, credentials, or API keys.
+
+## 📄 License
+
+Niraksh-Guardian is available under the [MIT License](./LICENSE).
+
 ---
 
 # 🚀 Implementation Strategy

@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest an improvement or new capability
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Please keep proposals aligned with safe, privacy-preserving health guidance.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or user need
+      description: What problem would this solve, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior or experience you would like.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: considerations
+    attributes:
+      label: Privacy, safety, or accessibility considerations
+      description: Explain any impact on health data, AI safety, accessibility, or security.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: This proposal does not require sharing real patient or health data.
+          required: true
