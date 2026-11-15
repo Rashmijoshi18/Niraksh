@@ -1,5 +1,6 @@
 import env from "../../config/env";
 import logger from "../../config/logger";
+import { getAILanguageInstruction, getLanguageMetadata } from "../../constants/languages";
 
 const API_KEY = env.GEMINI_API_KEY || "";
 
@@ -156,9 +157,12 @@ const buildChatContents = (
 		parts: [{ text: msg.content }],
 	}));
 
+	const langInstruction = getAILanguageInstruction(language);
+	const userMessageText = langInstruction ? `${langInstruction}\n\nUser Message: ${newMessage}` : newMessage;
+
 	const currentParts: any[] = [
 		{
-			text: language && language !== "en" ? `[Respond in ${language}] ${newMessage}` : newMessage,
+			text: userMessageText,
 		},
 	];
 
@@ -279,6 +283,13 @@ export const diagnoseSymptoms = async (
 
 		const parts: any[] = [];
 
+		const langMeta = getLanguageMetadata(language);
+		const langInstruction =
+			langMeta.code !== "en"
+				? `Language: ${langMeta.name} (${langMeta.nativeName}, code: ${langMeta.code}).
+        IMPORTANT: All explanations in 'reasoning' and 'homeRemedies' MUST be written in ${langMeta.name}. Maintain standard medical safety framing in ${langMeta.name} (informational only; consult a doctor for diagnosis). Keep condition names and specialist titles clear and recognizable.`
+				: "Language: English.";
+
 		// Add text prompt
 		const promptText = `
         Act as an expert medical AI (Niraksh Guardian).
@@ -286,7 +297,7 @@ export const diagnoseSymptoms = async (
         ${imageBuffer ? "Also analyze the attached medical image (e.g., skin rash, visible symptom)." : ""}
 
         Provide a structured analysis in JSON format ONLY. Do not include markdown code blocks.
-        Language: ${language}.
+        ${langInstruction}
 
         You MUST choose recommended specialists ONLY from this exact list:
         General Physician, Cardiologist, Dermatologist, Orthopedic Surgeon, Gynecologist,
@@ -373,12 +384,19 @@ export const getDiseaseInfo = async (
 	try {
 		if (!API_KEY) throw new Error("GEMINI_API_KEY is not configured");
 
+		const langMeta = getLanguageMetadata(language);
+		const langInstruction =
+			langMeta.code !== "en"
+				? `Language: ${langMeta.name} (${langMeta.nativeName}, code: ${langMeta.code}).
+        IMPORTANT: Provide the 'description', 'symptoms', 'causes', 'prevention', 'treatment', and 'whenToSeeDoctor' fields strictly in ${langMeta.name}.`
+				: "Language: English.";
+
 		const prompt = `
         Act as an expert medical AI (Niraksh Guardian). 
         Provide detailed information about the following disease/condition: "${topic}".
         
         Provide a structured analysis in JSON format ONLY. Do not include markdown code blocks.
-        Language: ${language}.
+        ${langInstruction}
         
         Output Structure:
         {

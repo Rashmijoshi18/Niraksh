@@ -1,3 +1,5 @@
+import type { SupportedLanguage } from "@/lib/languages";
+
 /* ------------------------------------------------------------------ */
 /*  Chat & Message types                                              */
 /* ------------------------------------------------------------------ */
@@ -34,18 +36,7 @@ export interface SendMessageResponse {
 
 /* — Request bodies — */
 
-export type ChatLanguage =
-	| "en"
-	| "hi"
-	| "bn"
-	| "te"
-	| "mr"
-	| "ta"
-	| "ur"
-	| "gu"
-	| "kn"
-	| "ml"
-	| "pa";
+export type ChatLanguage = SupportedLanguage;
 
 export interface CreateChatRequest {
 	title: string;

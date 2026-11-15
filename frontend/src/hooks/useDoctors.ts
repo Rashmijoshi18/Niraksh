@@ -113,6 +113,7 @@ export function useUserProfile() {
 	return {
 		city: data?.healthProfile?.city ?? undefined,
 		state: data?.healthProfile?.state ?? undefined,
+		languagePreference: data?.user?.languagePreference ?? undefined,
 	};
 }
 
@@ -130,11 +131,14 @@ export function useSymptomRelationship() {
 	} = useAsyncToolRunner<SymptomRelationshipResponse>(setResult);
 
 	const analyze = useCallback(
-		async (input: string, image?: File) => {
+		async (input: string, image?: File, language?: string) => {
 			const formData = new FormData();
 			formData.append("input", input);
 			if (image) {
 				formData.append("image", image);
+			}
+			if (language) {
+				formData.append("language", language);
 			}
 
 			const data = await run(

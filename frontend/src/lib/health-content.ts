@@ -113,16 +113,4 @@ export const HEALTH_TOOL_CARDS: HealthToolCard[] = [
 	},
 ];
 
-export const CHAT_LANGUAGES = [
-	{ code: "en", label: "English" },
-	{ code: "hi", label: "हिन्दी (Hindi)" },
-	{ code: "bn", label: "বাংলা (Bengali)" },
-	{ code: "te", label: "తెలుగు (Telugu)" },
-	{ code: "mr", label: "मराठी (Marathi)" },
-	{ code: "ta", label: "தமிழ் (Tamil)" },
-	{ code: "ur", label: "اردو (Urdu)" },
-	{ code: "gu", label: "ગુજરાતી (Gujarati)" },
-	{ code: "kn", label: "ಕನ್ನಡ (Kannada)" },
-	{ code: "ml", label: "മലയാളം (Malayalam)" },
-	{ code: "pa", label: "ਪੰਜਾਬੀ (Punjabi)" },
-] as const;
+export { CHAT_LANGUAGES, type LanguageInfo } from "@/lib/languages";

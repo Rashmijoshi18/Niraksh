@@ -258,6 +258,7 @@ Important safeguards:
 - [Frontend web flow](./frontend/doc/WEB_FLOW.md)
 - [Frontend data flow](./frontend/doc/DATA_FLOW.md)
 - [Frontend system design](./frontend/doc/SYSTEM_DESIGN.md)
+- [Localization & Multi-Language Guide](./docs/LOCALIZATION.md) — 11-language architecture, speech fallbacks, RTL, and QA checklist
 - [AI service README](./ai-services/README.md) — local FastAPI/Ollama fallback
 
 ## 🌱 Contributing

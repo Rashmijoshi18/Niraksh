@@ -6,6 +6,7 @@ import { ChatInput } from "./ChatInput";
 import { QuickSymptoms } from "./QuickSymptoms";
 import { Spinner } from "@/components/ui/Spinner";
 import type { Message, ChatLanguage } from "@/types/chat";
+import { getSpeechRecognitionLocale, getLanguageDirection } from "@/lib/constants";
 import { Bot, Stethoscope, Loader2, Volume2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -113,8 +114,20 @@ export function ChatWindow({
 		// Cancel any ongoing speech before speaking the new one
 		synth.cancel();
 
+		const targetLocale = getSpeechRecognitionLocale(language);
 		const utterance = new SpeechSynthesisUtterance(lastAiMessage.content);
-		utterance.lang = language === "hi" ? "hi-IN" : "en-US";
+		utterance.lang = targetLocale;
+
+		// Best-effort speech voice matching with fallback
+		const availableVoices = synth.getVoices?.() ?? [];
+		if (availableVoices.length > 0) {
+			const voice =
+				availableVoices.find((v) => v.lang === targetLocale) ||
+				availableVoices.find((v) => v.lang.startsWith(targetLocale.split("-")[0]));
+			if (voice) {
+				utterance.voice = voice;
+			}
+		}
 
 		synth.speak(utterance);
 		lastSpokenIdRef.current = lastAiMessage.id;
@@ -138,7 +151,7 @@ export function ChatWindow({
 	return (
 		<div className="flex flex-1 flex-col overflow-hidden">
 			{/* Message area */}
-			<div className="flex-1 overflow-y-auto">
+			<div className="flex-1 overflow-y-auto" dir={getLanguageDirection(language)}>
 				{isLoading ? (
 					<div className="flex h-full items-center justify-center">
 						<Spinner size="lg" className="text-primary" />
