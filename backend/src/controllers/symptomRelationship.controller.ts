@@ -17,7 +17,9 @@ export const symptomRelationshipController = async (req: Request, res: Response)
 		const userId = requireAuthenticatedUserId(req, res);
 		if (!userId) return;
 
-		const { input } = symptomRelationshipSchema.parse(req.body);
+		const { input, language } = symptomRelationshipSchema.parse(req.body);
+
+		logger.info({ userId, inputLength: input.length, language }, "Analyzing symptoms relationship");
 
 		const imageBuffer = req.file?.buffer;
 		const mimeType = req.file?.mimetype;

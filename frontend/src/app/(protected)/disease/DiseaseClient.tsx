@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } fro
 import { useSearchParams, useRouter } from "next/navigation";
 import { useSessionState } from "@/hooks/useSessionState";
 import { useDiseaseInfo } from "@/hooks/useHealthTools";
+import { useLanguagePreference } from "@/hooks/useLanguagePreference";
 import { CHAT_LANGUAGES } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
@@ -85,8 +86,12 @@ export function DiseaseClient() {
 	const [isResearchOpen, setIsResearchOpen] = useState(false);
 	const lastAutoFetchUrlKeyRef = useRef<string>("");
 
+	const { language: preferredLanguage } = useLanguagePreference();
 	const [topic, setTopic] = useSessionState("ng:disease:topic", urlTopic ?? "");
-	const [language, setLanguage] = useSessionState("ng:disease:language", urlLanguage ?? "en");
+	const [language, setLanguage] = useSessionState(
+		"ng:disease:language",
+		urlLanguage ?? preferredLanguage ?? "en",
+	);
 	const { result, isLoading, error, fetchInfo, reset } = useDiseaseInfo();
 
 	const metricCards = useMemo(() => {

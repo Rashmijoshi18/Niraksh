@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useChat } from "@/hooks/useChat";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useLanguagePreference } from "@/hooks/useLanguagePreference";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { useToast } from "@/contexts/ToastProvider";
@@ -17,9 +18,19 @@ import { PanelLeft } from "lucide-react";
 /* ------------------------------------------------------------------ */
 
 export function AssistanceClient() {
-	const [language, setLanguage] = useState<ChatLanguage>("en");
+	const { language: preferredLanguage, setLanguagePreference } = useLanguagePreference();
+	const [overrideLanguage, setOverrideLanguage] = useState<ChatLanguage | null>(null);
+	const language: ChatLanguage = overrideLanguage ?? preferredLanguage ?? "en";
 	const [sidebarOpen, setSidebarOpen] = useState(false);
 	const [isSidebarVisible, setIsSidebarVisible] = useState(true); // Desktop toggle
+
+	const handleLanguageChange = useCallback(
+		(newLang: ChatLanguage) => {
+			setOverrideLanguage(newLang);
+			void setLanguagePreference(newLang);
+		},
+		[setLanguagePreference],
+	);
 
 	const isMobile = useMediaQuery("(max-width: 768px)");
 	const { addToast } = useToast();
@@ -163,7 +174,7 @@ export function AssistanceClient() {
 					onNewChat={handleNewChat}
 					onDeleteChat={handleDeleteChat}
 					onRenameChat={handleRenameChat}
-					onLanguageChange={setLanguage}
+					onLanguageChange={handleLanguageChange}
 					onToggleSidebar={() => setIsSidebarVisible(false)}
 				/>
 			)}
@@ -188,7 +199,7 @@ export function AssistanceClient() {
 							onNewChat={handleNewChat}
 							onDeleteChat={handleDeleteChat}
 							onRenameChat={handleRenameChat}
-							onLanguageChange={setLanguage}
+							onLanguageChange={handleLanguageChange}
 							onClose={() => setSidebarOpen(false)}
 							isMobileOverlay
 						/>

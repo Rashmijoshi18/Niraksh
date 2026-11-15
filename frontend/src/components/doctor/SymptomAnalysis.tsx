@@ -16,6 +16,8 @@ import {
 	MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLanguagePreference } from "@/hooks/useLanguagePreference";
+import { CHAT_LANGUAGES, getLanguageDirection, type SupportedLanguage } from "@/lib/constants";
 import type { SymptomAnalysis as SymptomAnalysisType } from "@/types/doctor";
 import { SymptomBreakdown } from "./SymptomBreakdown";
 import { SymptomSuggestions } from "./SymptomSuggestions";
@@ -251,6 +253,9 @@ export function SymptomAnalysis({
 	onSpecialistFound,
 	onAnalysisComplete,
 }: SymptomAnalysisProps) {
+	const { language: preferredLanguage, setLanguagePreference } = useLanguagePreference();
+	const [overrideLanguage, setOverrideLanguage] = useState<SupportedLanguage | null>(null);
+	const language: SupportedLanguage = overrideLanguage ?? preferredLanguage ?? "en";
 	const [symptoms, setSymptoms] = useState(initialSymptoms ?? "");
 	const [image, setImage] = useState<File | null>(null);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -299,9 +304,9 @@ export function SymptomAnalysis({
 			e?.preventDefault();
 			if (!symptoms.trim() && !image) return; // Allow image-only analysis
 			setHydratedResult(null);
-			await sriAnalyze(symptoms, image || undefined);
+			await sriAnalyze(symptoms, image || undefined, language);
 		},
-		[symptoms, image, sriAnalyze],
+		[symptoms, image, language, sriAnalyze],
 	);
 
 	// When chatId summary fills the symptoms, auto-submit
@@ -321,11 +326,11 @@ export function SymptomAnalysis({
 			autoSubmitted.current = true;
 			const timer = window.setTimeout(() => {
 				setHydratedResult(null);
-				void sriAnalyze(symptoms, image || undefined);
+				void sriAnalyze(symptoms, image || undefined, language);
 			}, 0);
 			return () => window.clearTimeout(timer);
 		}
-	}, [autoAnalyze, chatId, symptoms, activeResult, isAnalyzing, sriAnalyze, image]);
+	}, [autoAnalyze, chatId, symptoms, activeResult, isAnalyzing, sriAnalyze, image, language]);
 
 	const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -366,6 +371,7 @@ export function SymptomAnalysis({
 						onChange={(e) => setSymptoms(e.target.value)}
 						placeholder="E.g., headache for 3 days, mild fever, body aches..."
 						rows={3}
+						dir={getLanguageDirection(language)}
 						className={cn(
 							"w-full resize-none rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground",
 							"placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20",
@@ -411,6 +417,30 @@ export function SymptomAnalysis({
 						>
 							<ImagePlus className="size-5" />
 						</button>
+
+						<div className="ml-auto flex items-center gap-1.5">
+							<label htmlFor="symptom-analysis-language" className="sr-only">
+								Language
+							</label>
+							<select
+								id="symptom-analysis-language"
+								value={language}
+								onChange={(e) => {
+									const newLang = e.target.value as SupportedLanguage;
+									setOverrideLanguage(newLang);
+									void setLanguagePreference(newLang);
+								}}
+								disabled={isAnalyzing}
+								className="h-10 rounded-lg border border-border bg-background px-2.5 text-xs text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+								aria-label="Analysis language"
+							>
+								{CHAT_LANGUAGES.map((l) => (
+									<option key={l.code} value={l.code}>
+										{l.label}
+									</option>
+								))}
+							</select>
+						</div>
 
 						<input
 							ref={fileInputRef}

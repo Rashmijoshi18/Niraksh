@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { languageEnum } from "../constants/languages";
 
 export const symptomDiagnosisSchema = z.object({
 	symptoms: z.array(z.string()).min(1, "At least one symptom is required"),
-	language: z.string().optional().default("en"),
+	language: languageEnum.optional().default("en"),
 });
 
 export const chatSummarySchema = z.object({
@@ -11,4 +12,5 @@ export const chatSummarySchema = z.object({
 
 export const symptomRelationshipSchema = z.object({
 	input: z.string().trim().max(2000, "Input must be 2000 characters or fewer").optional().default(""),
+	language: languageEnum.optional().default("en"),
 });

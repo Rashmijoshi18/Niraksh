@@ -1,13 +1,14 @@
 import { z } from "zod";
+import { languageEnum } from "../constants/languages";
 
 export const createChatSchema = z.object({
 	title: z.string().min(1, "Title is required").max(100, "Title is too long"),
-	language: z.enum(["en", "hi", "bn", "te", "mr", "ta", "ur", "gu", "kn", "ml", "pa"]).optional().default("en"), // Multi-language support
+	language: languageEnum.optional().default("en"), // Multi-language support
 });
 
 export const sendMessageSchema = z.object({
 	content: z.string().min(1, "Message content is required"),
-	language: z.string().optional(), // Optional override for specific message
+	language: languageEnum.optional(), // Optional override for specific message
 });
 
 export const updateChatSchema = z.object({

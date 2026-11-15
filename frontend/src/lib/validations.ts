@@ -3,6 +3,9 @@
 /* ------------------------------------------------------------------ */
 
 import { z } from "zod";
+import { SUPPORTED_LANGUAGES } from "@/lib/languages";
+
+export const languageEnum = z.enum(SUPPORTED_LANGUAGES);
 
 /* — Auth — */
 
@@ -101,7 +104,7 @@ export type ChatMessageFormData = z.infer<typeof chatMessageSchema>;
 
 export const symptomSearchSchema = z.object({
 	symptoms: z.array(z.string().min(1)).min(1, "Enter at least one symptom"),
-	language: z.string().optional().default("en"),
+	language: languageEnum.optional().default("en"),
 });
 export type SymptomSearchFormData = z.infer<typeof symptomSearchSchema>;
 
@@ -115,7 +118,7 @@ export type SummarizeSymptomsFormData = z.infer<typeof summarizeSymptomsSchema>;
 export const profileSchema = z.object({
 	name: z.string().optional(),
 	gender: z.enum(["Male", "Female", "Other"]).optional(),
-	languagePreference: z.string().optional(),
+	languagePreference: languageEnum.or(z.literal("")).optional(),
 	bloodGroup: z.string().optional(),
 	allergies: z.array(z.string()).optional(),
 	chronicConditions: z.array(z.string()).optional(),

@@ -15,6 +15,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { useIndiaStates, useStateCities } from "@/hooks/useLocationData";
 import { cn } from "@/lib/utils";
+import { CHAT_LANGUAGES, type SupportedLanguage } from "@/lib/constants";
 import type { ProfileResponse } from "@/types/health";
 
 /* ------------------------------------------------------------------ */
@@ -23,19 +24,6 @@ import type { ProfileResponse } from "@/types/health";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 const GENDERS = ["Male", "Female", "Other"] as const;
-const LANGUAGES = [
-	{ value: "en", label: "English" },
-	{ value: "hi", label: "Hindi" },
-	{ value: "bn", label: "Bengali" },
-	{ value: "te", label: "Telugu" },
-	{ value: "mr", label: "Marathi" },
-	{ value: "ta", label: "Tamil" },
-	{ value: "ur", label: "Urdu" },
-	{ value: "gu", label: "Gujarati" },
-	{ value: "kn", label: "Kannada" },
-	{ value: "ml", label: "Malayalam" },
-	{ value: "pa", label: "Punjabi" },
-];
 
 /* ------------------------------------------------------------------ */
 /*  TagInput — reusable chip-based multi-value input                  */
@@ -214,7 +202,7 @@ export function ProfileClient() {
 		reset({
 			name: user.name ?? "",
 			gender: (user.gender as "Male" | "Female" | "Other") ?? undefined,
-			languagePreference: user.languagePreference ?? "en",
+			languagePreference: (user.languagePreference as SupportedLanguage) ?? "en",
 			bloodGroup: healthProfile?.bloodGroup ?? "",
 			allergies: healthProfile?.allergies ?? [],
 			chronicConditions: healthProfile?.chronicConditions ?? [],
@@ -303,8 +291,8 @@ export function ProfileClient() {
 								{...register("languagePreference")}
 								className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
 							>
-								{LANGUAGES.map((l) => (
-									<option key={l.value} value={l.value}>
+								{CHAT_LANGUAGES.map((l) => (
+									<option key={l.code} value={l.code}>
 										{l.label}
 									</option>
 								))}

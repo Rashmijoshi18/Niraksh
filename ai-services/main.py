@@ -71,8 +71,38 @@ def filter_medgemma_tags(text: str) -> str:
     return text
 
 
+SUPPORTED_LANGUAGES = {
+    "en": ("English", "English", "ltr"),
+    "hi": ("Hindi", "हिन्दी", "ltr"),
+    "bn": ("Bengali", "বাংলা", "ltr"),
+    "te": ("Telugu", "తెలుగు", "ltr"),
+    "mr": ("Marathi", "मराठी", "ltr"),
+    "ta": ("Tamil", "தமிழ்", "ltr"),
+    "ur": ("Urdu", "اردو", "rtl"),
+    "gu": ("Gujarati", "ગુજરાતી", "ltr"),
+    "kn": ("Kannada", "ಕನ್ನಡ", "ltr"),
+    "ml": ("Malayalam", "മലയാളം", "ltr"),
+    "pa": ("Punjabi", "ਪੰਜਾਬੀ", "ltr"),
+}
+
+
 def build_prompt(user_prompt: str, language: Optional[str]):
-    language_instruction = f"Respond strictly in {language}." if language and language.strip() else ""
+    lang_key = (language or "").strip().lower()
+    if lang_key in SUPPORTED_LANGUAGES:
+        name, native, direction = SUPPORTED_LANGUAGES[lang_key]
+        if lang_key == "en":
+            language_instruction = ""
+        else:
+            rtl_note = " Format output for right-to-left layout where appropriate." if direction == "rtl" else ""
+            language_instruction = (
+                f"LANGUAGE REQUIREMENT:\n"
+                f"- Respond strictly and entirely in {name} ({native}).{rtl_note}\n"
+                f"- Preserve all safety rules and advise consulting a healthcare professional in {name}."
+            )
+    elif lang_key:
+        language_instruction = f"Respond strictly in {language}."
+    else:
+        language_instruction = ""
     return f"""You are Niraksh AI, an empathetic and highly knowledgeable Smart Healthcare Assistant. Your primary goal is to provide helpful health guidance.
 
 GUIDELINES:

@@ -14,6 +14,7 @@ import { Send, ImagePlus, X, Mic, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import type { ChatLanguage } from "@/types/chat";
+import { getSpeechRecognitionLocale, getLanguageDirection } from "@/lib/constants";
 
 // Web Speech API types (not in default lib.dom)
 interface SpeechRecognitionResult {
@@ -30,7 +31,7 @@ interface SpeechRecognitionInstance extends EventTarget {
 	lang: string;
 	onresult: ((event: SpeechRecognitionEvent) => void) | null;
 	onend: (() => void) | null;
-	onerror: (() => void) | null;
+	onerror: ((event?: Event) => void) | null;
 	start(): void;
 	stop(): void;
 	abort(): void;
@@ -108,13 +109,8 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
 		const recognition = new SpeechRecognitionCtor();
 		recognition.continuous = false;
 		recognition.interimResults = false;
-		// Match speech recognition language to current chat language
-		const lang =
-			inputLanguage === "hi"
-				? "hi-IN"
-				: inputLanguage === "en" || !inputLanguage
-					? "en-US"
-					: "en-US";
+		// Match speech recognition language to current chat language (11 Indian languages with fallback)
+		const lang = getSpeechRecognitionLocale(inputLanguage);
 		recognition.lang = lang;
 
 		recognition.onresult = (event: SpeechRecognitionEvent) => {
@@ -143,9 +139,16 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
 			announce("Voice input stopped.");
 		};
 
-		recognition.onerror = () => {
+		recognition.onerror = (event?: Event) => {
 			setIsListening(false);
-			announce("Voice input error encountered.");
+			const speechError = (event as { error?: string }).error;
+			if (speechError === "language-not-supported") {
+				announce(
+					`Voice recognition in ${inputLanguage || "selected language"} is not supported by your browser. Please type or use English speech.`
+				);
+			} else {
+				announce("Voice input error encountered.");
+			}
 		};
 
 		recognitionRef.current = recognition;
@@ -478,6 +481,7 @@ export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(function ChatI
 						placeholder={placeholder}
 						disabled={disabled}
 						rows={1}
+						dir={getLanguageDirection(inputLanguage)}
 						className={cn(
 							"min-h-[44px] max-h-[150px] w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-sm text-foreground",
 							"placeholder:text-muted",

@@ -9,3 +9,18 @@ export {
 	HEALTH_TOOL_CARDS,
 	CHAT_LANGUAGES,
 } from "@/lib/health-content";
+
+export {
+	SUPPORTED_LANGUAGES,
+	DEFAULT_LANGUAGE,
+	LANGUAGE_METADATA,
+	type SupportedLanguage,
+	type LanguageInfo,
+	isSupportedLanguage,
+	getLanguageInfo,
+	getSpeechRecognitionLocale,
+	getLanguageDirection,
+	isRTL,
+} from "@/lib/languages";
+
+export { t, TRANSLATIONS, type TranslationKey } from "@/lib/i18n";

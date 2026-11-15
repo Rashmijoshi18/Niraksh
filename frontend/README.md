@@ -160,3 +160,14 @@ The chat composer (`ChatInput.tsx`) conforms to WCAG 2.1 AA (TRD section 4.7) an
   - `Escape`: Cancel active voice recording or dismiss file upload error
   - `Tab` / `Shift + Tab`: Logical, predictable tab order across all composer controls
 
+## 🌐 Localization & 11-Language Support
+
+Niraksh supports 11 Indian languages (English, Hindi, Bengali, Telugu, Marathi, Tamil, Urdu, Gujarati, Kannada, Malayalam, and Punjabi) in accordance with FRD 17.3:
+
+- **Centralized Language Metadata:** Single source of truth in `@/lib/languages` (`SUPPORTED_LANGUAGES`, `CHAT_LANGUAGES`, `getSpeechRecognitionLocale`, `getLanguageDirection`).
+- **User Preference Persistence:** Stored via `useLanguagePreference` in the user's profile and synchronized across Chat, Symptom Analysis, and Disease Information.
+- **RTL Support:** Full right-to-left layout and textarea alignment when Urdu (`ur`) is selected.
+- **Speech Recognition Fallbacks:** Automatic BCP-47 locale tag resolution with screen-reader announcements and safe fallback to English (`en-US`) if an Indic speech engine is unavailable in the browser.
+- **Static UI Translation Resources:** Type-safe translation dictionary in `@/lib/i18n` with safe fallback to English for missing strings.
+- See the complete [Localization Guide](../docs/LOCALIZATION.md) for architecture, language matrix, and synthetic QA checklist.
+
