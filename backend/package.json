@@ -15,6 +15,9 @@
 		"prisma:deploy": "prisma migrate deploy",
 		"seed": "tsx prisma/seed.ts",
 		"admin:promote": "tsx scripts/promote-admin.ts",
+		"retention:cleanup": "tsx scripts/run-retention-cleanup.ts",
+		"retention:dry-run": "tsx scripts/run-retention-cleanup.ts --dry-run",
+		"test:retention": "tsx src/__tests__/retention.test.ts",
 		"clean": "rm -rf dist && rm -rf node_modules && pnpm install"
 	},
 	"keywords": [],

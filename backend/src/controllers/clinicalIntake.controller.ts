@@ -243,7 +243,13 @@ export const buildClinicalTimeline = async (patientId: string, doctorProfileId?:
 				select: { id: true, symptoms: true, urgencyLevel: true, createdAt: true },
 			}),
 			prisma.clinicalIntakeSession.findMany({
-				where: { patientId, status: { in: [ClinicalIntakeStatus.SUBMITTED, ClinicalIntakeStatus.REVIEWED] } },
+				where: {
+					patientId,
+					status: { in: [ClinicalIntakeStatus.SUBMITTED, ClinicalIntakeStatus.REVIEWED] },
+					consentGrantedAt: { not: null },
+					consentRevokedAt: null,
+					expiresAt: { gt: new Date() },
+				},
 				select: {
 					id: true,
 					chiefComplaint: true,
@@ -252,6 +258,9 @@ export const buildClinicalTimeline = async (patientId: string, doctorProfileId?:
 					triageLevel: true,
 					submittedAt: true,
 					createdAt: true,
+					consentGrantedAt: true,
+					consentRevokedAt: true,
+					expiresAt: true,
 				},
 			}),
 			prisma.clinicalTimelineEntry.findMany({ where: { patientId }, orderBy: { eventDate: "desc" } }),
@@ -296,7 +305,7 @@ export const buildClinicalTimeline = async (patientId: string, doctorProfileId?:
 				.map((medicine) => `${medicine.name}${medicine.dosage ? ` (${medicine.dosage})` : ""}`)
 				.join(", "),
 		})),
-		...intakes.map((item) => ({
+		...intakes.filter(isConsentActive).map((item) => ({
 			sourceType: "CLINICAL_INTAKE",
 			sourceId: item.id,
 			eventDate: item.submittedAt ?? item.createdAt,

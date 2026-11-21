@@ -259,6 +259,7 @@ Important safeguards:
 - [Frontend data flow](./frontend/doc/DATA_FLOW.md)
 - [Frontend system design](./frontend/doc/SYSTEM_DESIGN.md)
 - [Localization & Multi-Language Guide](./docs/LOCALIZATION.md) — 11-language architecture, speech fallbacks, RTL, and QA checklist
+- [Health Data Retention & Deletion](./docs/RETENTION_AND_CLEANUP.md) — automated cleanup jobs, TTL policies, Cloudinary synchronization, and operational runbook
 - [AI service README](./ai-services/README.md) — local FastAPI/Ollama fallback
 
 ## 🌱 Contributing

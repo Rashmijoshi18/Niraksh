@@ -24,6 +24,7 @@ To solve the challenge of accurately and securely interpreting fragmented person
 - **🔐 Consent-Based Clinical Context:** Appointment-linked intake sessions use explicit patient consent, triage flags, expiry, revocation, and doctor-only access grants.
 - **🧾 Clinical Continuity:** A merged patient timeline combines lab reports, uploaded prescriptions, medicine and symptom analyses, clinical intake, and issued doctor prescriptions.
 - **💊 Prescription Safety Workflow:** Doctors must run an interaction check against proposed and recorded medicines before issuing an appointment-linked prescription.
+- **🧹 Automated Health-Data Retention:** Idempotent cleanup jobs enforce TTL on disease cache (30d), lab report shares (7d), clinical intake sessions, access grants, auth tokens, and reports quota (max 10 health reports, 365d lab reports) with coordinated Cloudinary deletion and zero-PHI audit logging.
 
 ## 💻 Tech Stack
 
@@ -333,6 +334,7 @@ Dive deeper into our backend architecture, database schemas, and AI engineering 
 
 - [Backend System Design](./SYSTEM_DESIGN.md)
 - [Database Schema Guide](./DATABASE_SCHEMA.md)
+- [Health Data Retention & Cleanup Runbook](../docs/RETENTION_AND_CLEANUP.md)
 
 ### Current care-coordination API
 
@@ -363,3 +365,6 @@ Patient endpoints are mounted under `/api/appointments` and `/api/clinical-intak
 - `pnpm format`: Runs Prettier
 - `pnpm prisma:migrate`: Runs Prisma migrations
 - `pnpm seed`: Seeds the database with initial data
+- `pnpm retention:cleanup`: Runs scheduled health-data retention and cleanup jobs
+- `pnpm retention:dry-run`: Safe dry-run inspection of retention targets without DB or CDN mutations
+- `pnpm test:retention`: Executes the automated retention test suite
